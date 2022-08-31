@@ -15,7 +15,9 @@ return new class extends Migration
     {
         Schema::create('food_sections', function (Blueprint $table) {
             $table->id();
+            $table->softDeletes();
             $table->timestamps();
+            $table->json('title');
         });
     }
 

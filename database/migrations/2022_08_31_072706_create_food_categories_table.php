@@ -15,7 +15,11 @@ return new class extends Migration
     {
         Schema::create('food_categories', function (Blueprint $table) {
             $table->id();
+            $table->softDeletes();
             $table->timestamps();
+            $table->json('title');
+            $table->unsignedBigInteger('food_section_id')->index();
+            $table->foreign('food_section_id')->references('id')->on('food_sections')->onDelete('cascade');
         });
     }
 

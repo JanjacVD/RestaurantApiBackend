@@ -18,10 +18,13 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request)
     {
         $request->authenticate();
+        $credentials = $request->only('email', 'password');
+        
+        $something = Auth::attempt($credentials);
+        $user = Auth::user();
+        $token = $user->createToken('token')->plainTextToken;
+        return ['token' => $token,'user' => $user];
 
-        $request->session()->regenerate();
-
-        return response()->noContent();
     }
 
     /**
@@ -32,12 +35,16 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request)
     {
-        Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
+        $request->user()->currentAccessToken()->delete();
 
         return response()->noContent();
+    }
+
+    public function destroyAll(Request $request){
+        
+        $request->user()->tokens()->delete();
+
+        return response()->noContent();
+
     }
 }
