@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Lang;
 use App\Models\Menu\FoodSection;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class FoodSectionController extends Controller
 {

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Menu\FoodItem;
 use App\Models\Menu\FoodSection;
 use Illuminate\Http\Request;
 

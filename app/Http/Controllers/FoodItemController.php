@@ -7,8 +7,6 @@ use App\Models\Lang;
 use App\Models\Menu\FoodCategory;
 use App\Models\Menu\FoodItem;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 
 class FoodItemController extends Controller
 {
