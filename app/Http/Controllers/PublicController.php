@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class PublicController extends Controller
 {
     public function menu(){
-        $menu = FoodSection::withTrashed()->with(['foodCategory', 'foodCategory.foodItem', 'foodCategory.foodItem.alergen'])->get();
+        $menu = FoodSection::with(['foodCategory', 'foodCategory.foodItem', 'foodCategory.foodItem.alergen'])->get();
         return response()->json(['menu' => $menu]);
     }
 }

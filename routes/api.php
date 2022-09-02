@@ -23,7 +23,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('', [PublicController::class, 'menu']);
+Route::get('menu', [PublicController::class, 'menu']);
 
 
 //Section for admin
