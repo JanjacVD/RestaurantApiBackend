@@ -13,15 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('food_items', function (Blueprint $table) {
+        Schema::create('alergens', function (Blueprint $table) {
             $table->id();
-            $table->softDeletes();
             $table->timestamps();
+            $table->softDeletes();
             $table->json('title');
-            $table->json('description');
-            $table->integer('price');
-            $table->unsignedBigInteger('food_category_id')->index();
-            $table->foreign('food_category_id')->references('id')->on('food_categories')->onDelete('cascade');
         });
     }
 
@@ -32,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('food_items');
+        Schema::dropIfExists('alergens');
     }
 };

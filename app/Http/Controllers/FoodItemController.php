@@ -2,84 +2,96 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alergen;
+use App\Models\Lang;
+use App\Models\Menu\FoodCategory;
 use App\Models\Menu\FoodItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class FoodItemController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
-        //
+        $items = FoodItem::all();
+        return response()->json(['items' => $items]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function getTrashed()
     {
-        //
+        $items = FoodItem::onlyTrashed()->get();
+        return response()->json(['items' => $items]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
-        //
+        $sentLang = $request->sentLang;
+        $category = FoodCategory::where('id', $request->category)->first()->get('id');
+        $langs = Lang::whereIn('lang', $sentLang)->pluck('lang');
+        if ($langs = $sentLang) {
+            $foodItem = FoodItem::make([
+                'title' => [
+                    $request->title,
+                ],
+                'description' => [
+                    $request->description
+                ],
+                'price' => $request->price,
+            ]);
+            $category[0]->foodItem()->save($foodItem);
+            if ($request->alergen != null) {
+                $alergens = Alergen::whereIn('id', $request->alergen)->pluck('id');
+                $foodItem->alergen()->sync($alergens);
+            }
+            return response(['status' => 'Created'], 201);
+        } else {
+            abort(400);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Menu\FoodItem  $foodItem
-     * @return \Illuminate\Http\Response
-     */
-    public function show(FoodItem $foodItem)
+    public function show($id)
     {
-        //
+        $foodCategory = FoodCategory::all();
+        $alergens = Alergen::all();
+        $foodItem = FoodItem::with('alergen')->findOrFail($id);
+        return response()->json(['items' => $foodItem, 'categories' => $foodCategory]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Menu\FoodItem  $foodItem
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(FoodItem $foodItem)
+    public function update(Request $request, $id)
     {
-        //
+        $sentLang = $request->sentLang;
+        $category = FoodCategory::where('id', $request->category)->first()->get('id');
+        $langs = Lang::whereIn('lang', $sentLang)->pluck('lang');
+        if ($langs = $sentLang) {
+            $foodItem = FoodItem::findOrFail($id);
+            $foodItem->title = $request->title;
+            $foodItem->description = $request->description;
+            $foodItem->price = $request->price;
+            if ($request->alergen != null) {
+                $alergens = Alergen::whereIn('id', $request->alergen)->pluck('id');
+                $foodItem->alergen()->sync($alergens);
+            }
+            $foodItem->save();
+            $category[0]->foodItem()->save($foodItem);
+            return response(['status' => 'Updated'], 202);
+        } else {
+            abort(403);
+        }
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Menu\FoodItem  $foodItem
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, FoodItem $foodItem)
+    public function destroy($id)
     {
-        //
+        $foodItem = FoodItem::findOrFail($id);
+        $foodItem->delete();
+        return response()->noContent();
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Menu\FoodItem  $foodItem
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(FoodItem $foodItem)
+    public function forceDelete($id)
     {
-        //
+        FoodItem::withTrashed()->findOrFail($id)->forceDelete();
+        return response()->json(['status' => 'Deleted'], 204);
     }
 }

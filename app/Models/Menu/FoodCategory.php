@@ -12,12 +12,12 @@ class FoodCategory extends Model
 
     public $translatable = ['title'];
 
-    protected $fillable = ['title'];
+    protected $fillable = ['title', 'food_section_id'];
     
     public function foodItem(){
         return $this->hasMany(FoodItem::class);
     }
     public function foodSection(){
-        return $this->belongsTo(FoodSection::class);
+        return $this->belongsTo(FoodSection::class)->withTrashed();
     }
 }

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Lang;
 use App\Models\Menu\FoodSection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class FoodSectionController extends Controller
 {
@@ -14,19 +17,15 @@ class FoodSectionController extends Controller
      */
     public function index()
     {
-        //
+        $sections = FoodSection::all();
+        return response()->json(['sections' => $sections]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function getTrashed()
     {
-        //
+        $sections = FoodSection::onlyTrashed()->get();
+        return response()->json(['sections' => $sections]);
     }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -35,7 +34,18 @@ class FoodSectionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $sentLang = $request->sentLang;
+        $langs = Lang::whereIn('lang', $sentLang)->pluck('lang');
+        if ($langs = $sentLang) {
+            FoodSection::create([
+                'title' => [
+                    $request->title
+                ]
+            ]);
+            return response(['status' => 'Created'], 201);
+        } else {
+            abort(400);
+        }
     }
 
     /**
@@ -44,20 +54,16 @@ class FoodSectionController extends Controller
      * @param  \App\Models\Menu\FoodSection  $foodSection
      * @return \Illuminate\Http\Response
      */
-    public function show(FoodSection $foodSection)
+    public function show($id)
     {
-        //
+        $foodSection = FoodSection::withTrashed()->findOrFail($id);
+        return response()->json(['sections' => $foodSection]);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Menu\FoodSection  $foodSection
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(FoodSection $foodSection)
+    public function restore($id)
     {
-        //
+        $foodSection = FoodSection::withTrashed()->findOrFail($id);
+        $foodSection->restore();
+        return response()->noContent();
     }
 
     /**
@@ -67,9 +73,18 @@ class FoodSectionController extends Controller
      * @param  \App\Models\Menu\FoodSection  $foodSection
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, FoodSection $foodSection)
+    public function update(Request $request, $id)
     {
-        //
+        $sentLang = $request->sentLang;
+        $langs = Lang::whereIn('lang', $sentLang)->pluck('lang');
+        if ($langs = $sentLang) {
+            $foodSection = FoodSection::findOrFail($id);
+            $foodSection->title = $request->title;
+            $foodSection->save();
+            return response(['status' => 'updated'],202);
+        } else {
+            abort(400);
+        }
     }
 
     /**
@@ -78,8 +93,16 @@ class FoodSectionController extends Controller
      * @param  \App\Models\Menu\FoodSection  $foodSection
      * @return \Illuminate\Http\Response
      */
-    public function destroy(FoodSection $foodSection)
+    public function destroy($id)
     {
-        //
+        $foodSection = FoodSection::findOrFail($id);
+        $foodSection->delete();
+        return response()->noContent();
+    }
+
+    public function forceDestroy($id)
+    {
+        FoodSection::withTrashed()->findOrFail($id)->forceDelete();
+        return response()->json(['status' => 'Deleted'], 204);
     }
 }

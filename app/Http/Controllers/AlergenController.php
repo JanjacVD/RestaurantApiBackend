@@ -2,42 +2,34 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Menu\FoodCategory;
+use App\Models\Alergen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\Lang;
-use App\Models\Menu\FoodSection;
 
-class FoodCategoryController extends Controller
+class AlergenController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        $categories = FoodCategory::all();
-        return response()->json(['categories' => $categories]);
+        $alergens = Alergen::all();
+        return response()->json(['alergens' => $alergens]);
     }
 
     public function getTrashed()
     {
-        $categories = FoodCategory::onlyTrashed()->get();
-        return response()->json(['categories' => $categories]);
+        $alergens = Alergen::onlyTrashed()->get();
+        return response()->json(['alergens' => $alergens]);
     }
     public function store(Request $request)
     {
         $sentLang = $request->sentLang;
-        $section = FoodSection::where('id', $request->section)->first()->get('id');
         $langs = Lang::whereIn('lang', $sentLang)->pluck('lang');
         if ($langs = $sentLang) {
-            $category = FoodCategory::make([
+            Alergen::create([
                 'title' => [
                     $request->title,
                 ],
             ]);
-            $section[0]->foodCategory()->save($category);
             return response(['status' => 'Created'], 201);
         } else {
             abort(400);
@@ -47,8 +39,8 @@ class FoodCategoryController extends Controller
 
     public function show($id)
     {
-        $foodCategory = FoodCategory::withTrashed()->with('foodSection')->findOrFail($id);
-        return response()->json(['categories' => $foodCategory]);
+        $alergen = Alergen::withTrashed()->findOrFail($id);
+        return response()->json(['alergens' => $alergen]);
     }
 
     public function update(Request $request, $id)
@@ -56,9 +48,9 @@ class FoodCategoryController extends Controller
         $sentLang = $request->sentLang;
         $langs = Lang::whereIn('lang', $sentLang)->pluck('lang');
         if ($langs = $sentLang) {
-            $foodCategory = FoodCategory::findOrFail($id);
-            $foodCategory->title = $request->title;
-            $foodCategory->save();
+            $alergen = Alergen::findOrFail($id);
+            $alergen->title = $request->title;
+            $alergen->save();
             return response(['status' => 'updated'], 202);
         } else {
             abort(400);
@@ -67,20 +59,20 @@ class FoodCategoryController extends Controller
 
     public function restore($id)
     {
-        $foodCategory = FoodCategory::withTrashed()->findOrFail($id);
-        $foodCategory->restore();
+        $alergen = Alergen::withTrashed()->findOrFail($id);
+        $alergen->restore();
         return response()->noContent();
     }
     public function destroy($id)
     {
-        $foodCategory = FoodCategory::findOrFail($id);
-        $foodCategory->delete();
+        $alergen = Alergen::findOrFail($id);
+        $alergen->delete();
         return response()->noContent();
     }
 
     public function forceDestroy($id)
     {
-        FoodCategory::withTrashed()->findOrFail($id)->forceDelete();
+        Alergen::withTrashed()->findOrFail($id)->forceDelete();
         return response()->json(['status' => 'Deleted'], 204);
     }
 }
