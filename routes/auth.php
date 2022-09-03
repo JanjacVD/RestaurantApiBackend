@@ -9,7 +9,7 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [RegisteredUserController::class, 'store'])
-    ->middleware(['auth:sanctum'])
+    ->middleware(['auth:sanctum', 'mustBeAdmin'])
     ->name('register');
 
 Route::post('/login', [AuthenticatedSessionController::class, 'store'])
@@ -39,3 +39,7 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 Route::post('/logout-all', [AuthenticatedSessionController::class, 'destroyAll'])
     ->middleware(['auth:sanctum'])
     ->name('logoutAll');
+
+Route::delete('/delete-user', [RegisteredUserController::class, 'deleteUser'])
+    ->middleware(['auth:sanctum', 'mustBeAdmin'])
+    ->name('delete.user');

@@ -22,18 +22,18 @@ class RegisteredUserController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request)
-    {   
-        if(Gate::denies('create-user')){
+    {
+        if (Gate::denies('create-user')) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         $validator = Validator::make($request->only('name', 'email', 'password', 'role', 'password_confirmation'), [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'in:Basic,Manager,Admin']
         ]);
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json(['Errors' => $validator->errors()], 403);
         }
 
@@ -45,6 +45,15 @@ class RegisteredUserController extends Controller
         ]);
         event(new Registered($user));
 
+        return response()->noContent();
+    }
+    public function deleteUser($id)
+    {
+        if (Gate::denies('create-user')) {
+            abort(403, 'Unauthorized action.');
+        }
+        $user = User::findOrFail($id);
+        $user->delete;
         return response()->noContent();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Menu\FoodSection;
+use Illuminate\Support\Facades\Cache;
 
 class FoodSectionObserver
 {
@@ -14,7 +15,7 @@ class FoodSectionObserver
      */
     public function created(FoodSection $foodSection)
     {
-        
+        Cache::forget('menu');
     }
 
     /**
@@ -25,7 +26,7 @@ class FoodSectionObserver
      */
     public function updated(FoodSection $foodSection)
     {
-        //
+        Cache::forget('menu');
     }
 
     /**
@@ -36,7 +37,8 @@ class FoodSectionObserver
      */
     public function deleted(FoodSection $foodSection)
     {
-        //
+        $foodSection->foodCategory()->delete();
+        Cache::forget('menu');
     }
 
     /**
@@ -47,7 +49,8 @@ class FoodSectionObserver
      */
     public function restored(FoodSection $foodSection)
     {
-        //
+        $foodSection->foodCategory()->restore();
+        Cache::forget('menu');
     }
 
     /**
@@ -58,6 +61,7 @@ class FoodSectionObserver
      */
     public function forceDeleted(FoodSection $foodSection)
     {
-        //
+        $foodSection->foodCategory()->forceDelete();
+        Cache::forget('menu');
     }
 }
