@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Alergen;
 use App\Models\Menu\FoodCategory;
 use App\Models\Menu\FoodItem;
 use App\Models\Menu\FoodSection;
+use App\Observers\AlergenObserver;
 use App\Observers\FoodCategoryObserver;
 use App\Observers\FoodItemObserver;
 use App\Observers\FoodSectionObserver;
@@ -32,5 +34,6 @@ class AppServiceProvider extends ServiceProvider
         FoodSection::observe(FoodSectionObserver::class);
         FoodCategory::observe(FoodCategoryObserver::class);
         FoodItem::observe(FoodItemObserver::class);
+        Alergen::observe(AlergenObserver::class);
     }
 }

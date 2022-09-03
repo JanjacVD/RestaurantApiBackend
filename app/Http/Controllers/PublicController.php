@@ -10,7 +10,7 @@ class PublicController extends Controller
 {
     public function menu(){
         
-        $menu = Cache::rememberForever('menuItems', function(){
+        $menu = Cache::rememberForever('menu', function(){
         return FoodSection::with(['foodCategory', 'foodCategory.foodItem', 'foodCategory.foodItem.alergen'])->get();
         });
         return response()->json(['menu' => $menu]);

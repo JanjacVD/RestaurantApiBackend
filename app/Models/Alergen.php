@@ -8,11 +8,13 @@ use Spatie\Translatable\HasTranslations;
 
 class Alergen extends Model
 {
-    public $translatable;
+    use HasTranslations, SoftDeletes;
+
+    public $translatable = ['title'];
     protected $fillable = ['title'];
+    protected $hidden = ['pivot'];
 
     public function foodItem(){
         return $this->belongsToMany(FoodItem::class);
     }
-    use HasTranslations, SoftDeletes;
 }
