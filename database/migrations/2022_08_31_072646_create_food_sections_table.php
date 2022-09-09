@@ -18,6 +18,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
             $table->json('title');
+            $table->integer('order');
         });
     }
 

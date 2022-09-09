@@ -11,6 +11,7 @@ use App\Observers\FoodCategoryObserver;
 use App\Observers\FoodItemObserver;
 use App\Observers\FoodSectionObserver;
 use Illuminate\Support\ServiceProvider;
+use Spatie\Translatable\Facades\Translatable;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,6 +32,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Translatable::fallback(
+            fallbackAny: true
+        );
         FoodSection::observe(FoodSectionObserver::class);
         FoodCategory::observe(FoodCategoryObserver::class);
         FoodItem::observe(FoodItemObserver::class);

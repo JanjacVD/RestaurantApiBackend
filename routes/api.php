@@ -1,10 +1,11 @@
 <?php
 
-use App\Http\Controllers\FoodCategoryController;
-use App\Http\Controllers\FoodItemController;
-use App\Http\Controllers\AlergenController;
-use App\Http\Controllers\FoodSectionController;
-use App\Http\Controllers\PublicController;
+use App\Http\Controllers\Admin\FoodCategoryController;
+use App\Http\Controllers\Admin\FoodItemController;
+use App\Http\Controllers\Admin\AlergenController;
+use App\Http\Controllers\Admin\FoodSectionController;
+use App\Http\Controllers\Guest\PublicController;
+use App\Models\Menu\FoodSection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,7 +25,6 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 });
 
 Route::get('menu', [PublicController::class, 'menu']);
-
 
 Route::group(['middleware' => ['auth:sanctum', 'mustBeAdmin']], function () {
     //Section for admin
