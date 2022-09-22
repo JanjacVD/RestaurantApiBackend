@@ -16,6 +16,7 @@ class AlergenResource extends JsonResource
     {
         return [
             'title' => $this->getTranslation('title', $request->lang),
+            'titles' => $this->when($request->lang = null,$this->getTranslations('title')),
         ];
     }
 }

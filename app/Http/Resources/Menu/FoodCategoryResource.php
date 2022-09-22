@@ -16,6 +16,7 @@ class FoodCategoryResource extends JsonResource
     {
         return [
             'title' => $this->getTranslation('title', $request->lang),
+            'titles' => $this->when($request->lang = null,$this->getTranslations('title')),
             'items' => FoodItemResource::collection($this->whenLoaded('foodItem')),
             'order'=>$this->order
         ];
