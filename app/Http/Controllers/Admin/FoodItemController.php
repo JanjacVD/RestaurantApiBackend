@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FoodItemRequest;
+use App\Http\Requests\PaginatedRequest;
+use App\Http\Resources\Menu\FoodItemResource;
 use App\Models\Alergen;
 use App\Models\Lang;
 use App\Models\Menu\FoodCategory;
@@ -12,20 +15,22 @@ use Illuminate\Http\Request;
 class FoodItemController extends Controller
 {
 
-    public function index()
+    public function index(PaginatedRequest $request)
     {
-        $items = FoodItem::all();
-        return response()->json(['items' => $items]);
+        $rpp = $request->rpp;
+        $data = FoodItemResource::collection(FoodItem::paginate($rpp));
+        return $data;
     }
 
-    public function getTrashed()
+    public function getTrashed(PaginatedRequest $request)
     {
-        $items = FoodItem::onlyTrashed()->get();
-        return response()->json(['items' => $items]);
+        $rpp = $request->rpp;
+        $data = FoodItemResource::collection(FoodItem::onlyTrashed()->paginate($rpp));
+        return $data;
     }
 
 
-    public function store(Request $request)
+    public function store(FoodItemRequest $request)
     {
         $sentLang = $request->sentLang;
         $category = FoodCategory::where('id', $request->category)->first()->get('id');
@@ -59,7 +64,7 @@ class FoodItemController extends Controller
         return response()->json(['items' => $foodItem, 'categories' => $foodCategory]);
     }
 
-    public function update(Request $request, $id)
+    public function update(FoodItemRequest $request, $id)
     {
         $sentLang = $request->sentLang;
         $category = FoodCategory::where('id', $request->category)->first()->get('id');

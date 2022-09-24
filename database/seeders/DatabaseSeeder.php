@@ -3,6 +3,12 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\Alergen;
+use App\Models\Lang;
+use App\Models\Menu\FoodCategory;
+use App\Models\Menu\FoodItem;
+use App\Models\Menu\FoodSection;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -20,5 +26,20 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+        Lang::create([
+            'lang' => 'hr',
+        ]);
+        Lang::create([
+            'lang' => 'en',
+        ]);
+        Alergen::factory(5)->create();
+        FoodSection::factory(5)->create();
+        FoodCategory::factory(5)->create();
+        FoodItem::factory(20)->create();
+        $food = FoodItem::all();
+        $alergen = Alergen::all()->pluck('id');
+        foreach ($food as $f) {
+            $f->alergen()->sync($alergen->random(2));
+        }
     }
 }

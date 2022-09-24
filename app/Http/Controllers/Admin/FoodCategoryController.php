@@ -2,75 +2,110 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Validators\Validator;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\FoodCategoryRequest;
+use App\Http\Requests\PaginatedRequest;
+use App\Http\Resources\Menu\FoodCategoryResource;
 use App\Models\Menu\FoodCategory;
 use Illuminate\Http\Request;
-use App\Models\Lang;
 use App\Models\Menu\FoodSection;
 
 class FoodCategoryController extends Controller
 {
+
+
+    public function index(PaginatedRequest $request)
+    {
+        $rpp = $request->rpp;
+        $data = FoodCategoryResource::collection(FoodCategory::paginate($rpp));
+        return $data;
+    }
+
+    public function getTrashed(PaginatedRequest $request)
+    {
+        $rpp = $request->rpp;
+        $data = FoodCategoryResource::collection(FoodCategory::onlyTrashed()->paginate($rpp));
+        return $data;
+    }
     /**
-     * Display a listing of the resource.
+     * Store a newly created resource in storage.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function store(FoodCategoryRequest $request)
     {
-        $categories = FoodCategory::all();
-        return response()->json(['categories' => $categories]);
-    }
-
-    public function getTrashed()
-    {
-        $categories = FoodCategory::onlyTrashed()->get();
-        return response()->json(['categories' => $categories]);
-    }
-    public function store(Request $request)
-    {
-        $sentLang = $request->sentLang;
-        $section = FoodSection::where('id', $request->section)->first()->get('id');
-        $langs = Lang::whereIn('lang', $sentLang)->pluck('lang');
-        if ($langs = $sentLang) {
-            $category = FoodCategory::make([
-                'title' => [
-                    $request->title,
-                ],
-            ]);
-            $section[0]->foodCategory()->save($category);
-            return response(['status' => 'Created'], 201);
-        } else {
-            abort(400);
+        $val = new Validator();
+        $val->validateKeys($request->sentLang);
+        $translations = $val->createTranslations($request->title);
+        if ($val->failed) {
+            return $this->failedLang();
         }
+        $order = FoodCategory::count();
+        $sectionId = FoodSection::findOrFail($request->food_section);
+        FoodCategory::create([
+            'title' => $translations,
+            'order' => $order,
+            'food_section_id' => $sectionId['id']
+        ]);
+        return response()->json(['status' => 'created'], 201);
     }
 
-
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Menu\FoodSection  $foodCategory
+     * @return \Illuminate\Http\Response
+     */
     public function show($id)
     {
-        $foodCategory = FoodCategory::withTrashed()->with('foodSection')->findOrFail($id);
-        return response()->json(['categories' => $foodCategory]);
+        $data = new FoodCategoryResource(FoodCategory::withTrashed()->findOrFail($id));
+        return $data;
     }
-
-    public function update(Request $request, $id)
-    {
-        $sentLang = $request->sentLang;
-        $langs = Lang::whereIn('lang', $sentLang)->pluck('lang');
-        if ($langs = $sentLang) {
-            $foodCategory = FoodCategory::findOrFail($id);
-            $foodCategory->title = $request->title;
-            $foodCategory->save();
-            return response(['status' => 'updated'], 202);
-        } else {
-            abort(400);
-        }
-    }
-
     public function restore($id)
     {
         $foodCategory = FoodCategory::withTrashed()->findOrFail($id);
         $foodCategory->restore();
         return response()->noContent();
     }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Menu\FoodSection  $foodCategory
+     * @return \Illuminate\Http\Response
+     */
+    public function update(FoodCategoryRequest $request, $id)
+    {
+        $foodCategory = FoodCategory::findOrFail($id);
+        $val = new Validator();
+        $val->validateKeys($request->sentLang);
+        $translations = $val->createTranslations($request->title);
+        if ($val->failed) {
+            return $this->failedLang();
+        }
+        $sectionId = FoodSection::findOrFail($request->food_section);
+        $foodCategory->title = $translations;
+        $foodCategory->food_section_id = $sectionId['id'];
+        $foodCategory->save();
+        return response()->json(['status' => 'updated'], 201);
+    }
+    public function updateOrder(Request $request)
+    {
+        $items = $request->items;
+        foreach ($items as $item) {
+            FoodCategory::withTrashed()->find($item['id'])->update(['order' => $item['order']]);
+        }
+        return response()->json(['status' => 'updated'], 201);
+    }
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Menu\FoodSection  $foodCategory
+     * @return \Illuminate\Http\Response
+     */
     public function destroy($id)
     {
         $foodCategory = FoodCategory::findOrFail($id);

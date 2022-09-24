@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Menu;
 
+use App\Models\Lang;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class FoodCategoryResource extends JsonResource
@@ -13,12 +14,11 @@ class FoodCategoryResource extends JsonResource
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
     public function toArray($request)
-    {
+    {   $translation = $request->lang;
         return [
-            'title' => $this->getTranslation('title', $request->lang),
-            'titles' => $this->when($request->lang = null,$this->getTranslations('title')),
+            'title' => $this->getTranslations('title'),
             'items' => FoodItemResource::collection($this->whenLoaded('foodItem')),
-            'order'=>$this->order
+            'order' => $this->order
         ];
     }
 }

@@ -19,8 +19,7 @@ class FoodSectionResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'title' => $this->getTranslation('title',  $request->lang),
-            'titles' => $this->when($request->lang = null,$this->getTranslations('title')),
+            'title' => $this->getTranslations('title'),
             'categories' => FoodCategoryResource::collection($this->whenLoaded('foodCategory')),
             'order'=>$this->order
         ];

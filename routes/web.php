@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Menu\FoodSection;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,4 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return ['Laravel' => app()->version()];
+});
+Route::get('', function(){
+    return FoodSection::all()->pluck('id')->random();
 });

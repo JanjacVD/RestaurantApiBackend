@@ -26,7 +26,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 Route::get('menu', [PublicController::class, 'menu']);
 
-Route::group(['middleware' => ['auth:sanctum', 'mustBeAdmin']], function () {
+// Route::group(['middleware' => ['auth:sanctum', 'mustBeAdmin']], function () {
     //Section for admin
     Route::get('section', [FoodSectionController::class, 'index']);
     Route::get('section-trashed', [FoodSectionController::class, 'getTrashed']);
@@ -63,6 +63,6 @@ Route::group(['middleware' => ['auth:sanctum', 'mustBeAdmin']], function () {
     Route::put('alergen-update/{categoryId}', [AlergenController::class, 'update']);
     Route::delete('alergen-delete/{categoryId}', [AlergenController::class, 'destroy']);
     Route::delete('alergen-destroy/{categoryId}', [AlergenController::class, 'forceDestroy']);
-});
+// });
 
 require __DIR__ . '/auth.php';

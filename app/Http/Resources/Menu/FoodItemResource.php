@@ -15,10 +15,8 @@ class FoodItemResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'title' => $this->getTranslation('title', $request->lang),
-            'titles' => $this->when($request->lang = null,$this->getTranslations('title')),
-            'descritpion' => $this->getTranslation('description', $request->lang),
-            'descriptions' => $this->when($request->lang = null,$this->getTranslations('description')),
+            'title' => $this->getTranslations('title'),
+            'descritpion' => $this->getTranslations('description'),
             'price'=>$this->price,
             'order'=>$this->order,
             'alergens'=> AlergenResource::collection($this->whenLoaded('alergen'))

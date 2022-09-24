@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Validators\Validator;
 use App\Http\Controllers\Controller;
-use App\Models\Lang;
+use App\Http\Requests\FoodSectionRequest;
+use App\Http\Requests\PaginatedRequest;
+use App\Http\Resources\Menu\FoodSectionResource;
 use App\Models\Menu\FoodSection;
 use Illuminate\Http\Request;
 
@@ -14,16 +17,18 @@ class FoodSectionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(PaginatedRequest $request)
     {
-        $sections = FoodSection::all();
-        return response()->json(['sections' => $sections]);
+        $rpp = $request->rpp;
+        $data = FoodSectionResource::collection(FoodSection::paginate($rpp));
+        return $data;
     }
 
-    public function getTrashed()
+    public function getTrashed(PaginatedRequest $request)
     {
-        $sections = FoodSection::onlyTrashed()->get();
-        return response()->json(['sections' => $sections]);
+        $rpp = $request->rpp;
+        $data = FoodSectionResource::collection(FoodSection::onlyTrashed()->paginate($rpp));
+        return $data;
     }
     /**
      * Store a newly created resource in storage.
@@ -31,20 +36,20 @@ class FoodSectionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(FoodSectionRequest $request)
     {
-        $sentLang = $request->sentLang;
-        $langs = Lang::whereIn('lang', $sentLang)->pluck('lang');
-        if ($langs = $sentLang) {
-            FoodSection::create([
-                'title' => [
-                    $request->title
-                ]
-            ]);
-            return response(['status' => 'Created'], 201);
-        } else {
-            abort(400);
+        $val = new Validator();
+        $val->validateKeys($request->sentLang);
+        $translations = $val->createTranslations($request->title);
+        if ($val->failed) {
+            return $this->failedLang();
         }
+        $order = FoodSection::count();
+        FoodSection::create([
+            'title' => $translations,
+            'order' => $order
+        ]);
+        return response()->json(['status' => 'created'], 201);
     }
 
     /**
@@ -55,8 +60,8 @@ class FoodSectionController extends Controller
      */
     public function show($id)
     {
-        $foodSection = FoodSection::withTrashed()->findOrFail($id);
-        return response()->json(['sections' => $foodSection]);
+        $data = new FoodSectionResource(FoodSection::withTrashed()->findOrFail($id));
+        return $data;
     }
     public function restore($id)
     {
@@ -72,20 +77,27 @@ class FoodSectionController extends Controller
      * @param  \App\Models\Menu\FoodSection  $foodSection
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(FoodSectionRequest $request, $id)
     {
-        $sentLang = $request->sentLang;
-        $langs = Lang::whereIn('lang', $sentLang)->pluck('lang');
-        if ($langs = $sentLang) {
-            $foodSection = FoodSection::findOrFail($id);
-            $foodSection->title = $request->title;
-            $foodSection->save();
-            return response(['status' => 'updated'],202);
-        } else {
-            abort(400);
+        $foodSection = FoodSection::findOrFail($id);
+        $val = new Validator();
+        $val->validateKeys($request->sentLang);
+        $translations = $val->createTranslations($request->title);
+        if ($val->failed) {
+            return $this->failedLang();
         }
+        $foodSection->title = $translations;
+        $foodSection->save();
+        return response()->json(['status' => 'updated'], 201);
     }
-
+    public function updateOrder(Request $request)
+    {
+        $items = $request->items;
+        foreach ($items as $item) {
+            FoodSection::withTrashed()->find($item['id'])->update(['order' => $item['order']]);
+        }
+        return response()->json(['status' => 'updated'], 201);
+    }
     /**
      * Remove the specified resource from storage.
      *
