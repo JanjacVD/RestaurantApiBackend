@@ -19,7 +19,6 @@ class AlergenFactory extends Factory
         return [
             'title' => ['en' => $this->faker->word(), 'hr' => $this->faker->word()],
             'created_at' => now(),
-            'deleted_at' => null,
             'updated_at' => now(),
         ];
     }

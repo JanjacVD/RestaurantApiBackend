@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class FoodItemRequest extends FormRequest
+class AlergenRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,11 +26,7 @@ class FoodItemRequest extends FormRequest
         return [
             'sentLang' => ['required', 'array'],
             'sentLang*' => ['string'],
-            'title' => ['required'],
-            'description' => ['required'],
-            'alergen' => ['array', 'nullable'],
-            'price' => ['required', 'numeric'],
-            'food_category' => ['required', 'integer']
+            'title' => ['required']
         ];
     }
 }

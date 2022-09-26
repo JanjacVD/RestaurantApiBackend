@@ -24,7 +24,7 @@ class FoodItemFactory extends Factory
             'created_at' => now(),
             'deleted_at' => null,
             'updated_at' => now(),
-            'price' => mt_rand(50, 300),
+            'price' => 19.99,
             'food_category_id' => FoodCategory::all()->pluck('id')->random(),
             'order' => (count(FoodItem::all()) + 1)
         ];

@@ -14,7 +14,7 @@ class FoodItem extends Model
 
     public $translatable = ['title', 'description', 'alergens'];
 
-    protected $fillable = ['title', 'description', 'price', 'order'];
+    protected $fillable = ['title', 'description', 'price', 'order', 'food_category_id'];
 
 
     public function foodCategory()

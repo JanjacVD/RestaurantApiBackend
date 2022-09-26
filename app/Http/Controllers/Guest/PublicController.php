@@ -3,32 +3,31 @@
 namespace App\Http\Controllers\Guest;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ContactRequest;
 use App\Http\Resources\Menu\FoodSectionResource;
-use App\Models\Lang;
+use App\Jobs\SendContactEmail;
 use App\Models\Menu\FoodSection;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Validator;
 
 class PublicController extends Controller
 {
-    public function menu(Request $request)
+    public function menu()
     {
-        $validate = Validator::make(
-            $request->only('lang'),
-            [
-                'lang' => ['string']
-            ]
-        );
-        if ($validate->fails()) {
-            return response()->json(['errors' => $validate->errors()]);
-        }
-   
         $menu = Cache::rememberForever('menu', function () {
             $query = FoodSection::with('foodCategory', 'foodCategory.foodItem', 'foodCategory.foodItem.alergen')->get();
             $data = FoodSectionResource::collection($query);
             return $data;
         });
         return $menu;
+    }
+
+    public function contact(ContactRequest $request)
+    {
+        $email = $request->email;
+        $name = $request->name;
+        $subject = $request->subject;
+        $msg = $request->text;
+        SendContactEmail::dispatch($email, $name, $subject, $msg)->onQueue('low');
+        return response()->json(['status' => 'sent'], 200);
     }
 }

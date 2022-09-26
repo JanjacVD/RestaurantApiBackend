@@ -25,6 +25,8 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 });
 
 Route::get('menu', [PublicController::class, 'menu']);
+Route::middleware(['throttle:contact'])->post('contact', [PublicController::class, 'contact']);
+//429
 
 // Route::group(['middleware' => ['auth:sanctum', 'mustBeAdmin']], function () {
     //Section for admin

@@ -2,26 +2,33 @@
 
 namespace App\Http\Controllers\Admin\Validators;
 
+use App\Models\Alergen;
 use App\Models\Lang;
 use Throwable;
 
-class Validator {
+class Validator
+{
     public $failed;
-    
-    protected function validateLang($langParams){
+
+
+    private static function array_equal($a, $b)
+    {
+        array_multisort($a);
+        array_multisort($b);
+        return ( serialize($a) === serialize($b) );
+    }
+
+    public function validateLang($langParams)
+    {
         $lang = Lang::all()->pluck('lang');
-        if($lang = $langParams){
-            return true;
-        }
-        else{
-            return false;
+        if(!$this->array_equal($lang->toArray(), $langParams)){
+            $this->failed = true;
         }
     }
-    public function validateKeys($langs)
+    public function validateAlergen($alergenParams)
     {
-        if ($this->validateLang($langs)) {
-            $this->failed = false;
-        } else {
+        $alergen = Alergen::whereIn('id', $alergenParams)->pluck('id');
+        if(!$this->array_equal($alergen->toArray(), $alergenParams)){
             $this->failed = true;
         }
     }
@@ -30,13 +37,12 @@ class Validator {
         $lang = Lang::all()->pluck('lang');
         $arr = [];
         foreach ($lang as $l) {
-            try{
+            try {
                 $arr[$l] = $params[$l];
-            }
-            catch(Throwable $e){
+            } catch (Throwable $e) {
                 abort(404, 'Error setting translations');
             }
-            }
+        }
         return $arr;
     }
 }

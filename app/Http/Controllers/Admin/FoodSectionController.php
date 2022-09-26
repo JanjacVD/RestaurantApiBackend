@@ -39,7 +39,7 @@ class FoodSectionController extends Controller
     public function store(FoodSectionRequest $request)
     {
         $val = new Validator();
-        $val->validateKeys($request->sentLang);
+        $val->validateLang($request->sentLang);
         $translations = $val->createTranslations($request->title);
         if ($val->failed) {
             return $this->failedLang();
@@ -81,7 +81,7 @@ class FoodSectionController extends Controller
     {
         $foodSection = FoodSection::findOrFail($id);
         $val = new Validator();
-        $val->validateKeys($request->sentLang);
+        $val->validateLang($request->sentLang);
         $translations = $val->createTranslations($request->title);
         if ($val->failed) {
             return $this->failedLang();

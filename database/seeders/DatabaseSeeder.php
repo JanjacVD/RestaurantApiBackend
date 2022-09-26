@@ -26,12 +26,16 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
-        Lang::create([
-            'lang' => 'hr',
-        ]);
-        Lang::create([
-            'lang' => 'en',
-        ]);
+
+
+        // Lang::create([
+        //     'lang' => 'hr',
+        // ]);
+        // Lang::create([
+        //     'lang' => 'en',
+        // ]);
+
+        
         Alergen::factory(5)->create();
         FoodSection::factory(5)->create();
         FoodCategory::factory(5)->create();

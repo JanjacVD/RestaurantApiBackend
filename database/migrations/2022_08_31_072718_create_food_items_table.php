@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamps();
             $table->json('title');
             $table->json('description');
-            $table->integer('price');
+            $table->decimal('price', 4, 2);
             $table->integer('order');
             $table->unsignedBigInteger('food_category_id')->index();
             $table->foreign('food_category_id')->references('id')->on('food_categories')->onDelete('cascade');

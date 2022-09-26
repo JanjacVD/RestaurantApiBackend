@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Admin\Validators\Validator;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FoodItemRequest;
 use App\Http\Requests\PaginatedRequest;
@@ -32,28 +33,33 @@ class FoodItemController extends Controller
 
     public function store(FoodItemRequest $request)
     {
-        $sentLang = $request->sentLang;
-        $category = FoodCategory::where('id', $request->category)->first()->get('id');
-        $langs = Lang::whereIn('lang', $sentLang)->pluck('lang');
-        if ($langs = $sentLang) {
-            $foodItem = FoodItem::make([
-                'title' => [
-                    $request->title,
-                ],
-                'description' => [
-                    $request->description
-                ],
-                'price' => $request->price,
-            ]);
-            $category[0]->foodItem()->save($foodItem);
-            if ($request->alergen != null) {
-                $alergens = Alergen::whereIn('id', $request->alergen)->pluck('id');
-                $foodItem->alergen()->sync($alergens);
-            }
-            return response(['status' => 'Created'], 201);
-        } else {
-            abort(400);
+        $val = new Validator();
+        $val->validateLang($request->sentLang);
+        if ($val->failed) {
+            return $this->failedLang();
         }
+        $translationsTitle = $val->createTranslations($request->title);
+        $translationsDesc = $val->createTranslations($request->description);
+        $alergen = $request->alergen;
+        if ($alergen === null) {
+            $alergen = [];
+        }
+        $val->validateAlergen($alergen);
+        if ($val->failed) {
+            return $this->failedAlergen();
+        }
+        $order = FoodItem::count();
+        $categoryId = FoodCategory::findOrFail($request->food_category);
+
+        $item = FoodItem::create([
+            'title' => $translationsTitle,
+            'description' => $translationsDesc,
+            'order' => $order,
+            'price' => $request->price,
+            'food_category_id' => $categoryId['id']
+        ]);
+        $item->alergen()->sync($alergen);
+        return response()->json(['status' => 'created'], 201);
     }
 
     public function show($id)
@@ -66,24 +72,30 @@ class FoodItemController extends Controller
 
     public function update(FoodItemRequest $request, $id)
     {
-        $sentLang = $request->sentLang;
-        $category = FoodCategory::where('id', $request->category)->first()->get('id');
-        $langs = Lang::whereIn('lang', $sentLang)->pluck('lang');
-        if ($langs = $sentLang) {
-            $foodItem = FoodItem::findOrFail($id);
-            $foodItem->title = $request->title;
-            $foodItem->description = $request->description;
-            $foodItem->price = $request->price;
-            if ($request->alergen != null) {
-                $alergens = Alergen::whereIn('id', $request->alergen)->pluck('id');
-                $foodItem->alergen()->sync($alergens);
-            }
-            $foodItem->save();
-            $category[0]->foodItem()->save($foodItem);
-            return response(['status' => 'Updated'], 202);
-        } else {
-            abort(403);
+        $val = new Validator();
+        $val->validateLang($request->sentLang);
+        if ($val->failed) {
+            return $this->failedLang();
         }
+        $translationsTitle = $val->createTranslations($request->title);
+        $translationsDesc = $val->createTranslations($request->description);
+        $alergen = $request->alergen;
+        $val->validateAlergen($alergen);
+        if ($val->failed) {
+            return $this->failedAlergen();
+        }
+        $order = FoodItem::count();
+        $categoryId = FoodCategory::findOrFail($request->food_category);
+
+        $item = FoodItem::findOrFail($id)->update([
+            'title' => $translationsTitle,
+            'description' => $translationsDesc,
+            'order' => $order,
+            'price' => $request->price,
+            'food_category_id' => $categoryId['id']
+        ]);
+        $item->alergen()->sync($alergen);
+        return response()->json(['status' => 'updated'], 201);
     }
 
     public function destroy($id)
