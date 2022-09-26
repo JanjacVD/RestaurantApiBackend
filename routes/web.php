@@ -1,8 +1,11 @@
 <?php
 
 use App\Events\NewReservationPending;
+use App\Http\Controllers\Admin\LangController;
+use App\Models\Menu\FoodItem;
 use App\Models\Menu\FoodSection;
 use Illuminate\Support\Facades\Route;
+use Spatie\Translatable\HasTranslations;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,8 +20,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return ['Laravel' => app()->version()];
-});
-Route::get('', function(){
-    event(new NewReservationPending('test'));
-    return 'done';
 });

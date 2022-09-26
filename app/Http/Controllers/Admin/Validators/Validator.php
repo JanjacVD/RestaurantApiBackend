@@ -20,7 +20,7 @@ class Validator
 
     public function validateLang($langParams)
     {
-        $lang = Lang::all()->pluck('lang');
+        $lang = Lang::all()->pluck('lang_code');
         if(!$this->array_equal($lang->toArray(), $langParams)){
             $this->failed = true;
         }
@@ -34,7 +34,7 @@ class Validator
     }
     public function createTranslations($params)
     {
-        $lang = Lang::all()->pluck('lang');
+        $lang = Lang::all()->pluck('lang_code');
         $arr = [];
         foreach ($lang as $l) {
             try {

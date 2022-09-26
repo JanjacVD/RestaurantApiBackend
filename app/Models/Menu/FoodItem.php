@@ -12,7 +12,7 @@ class FoodItem extends Model
 {
     use SoftDeletes, HasTranslations, HasFactory;
 
-    public $translatable = ['title', 'description', 'alergens'];
+    public $translatable = ['title', 'description'];
 
     protected $fillable = ['title', 'description', 'price', 'order', 'food_category_id'];
 

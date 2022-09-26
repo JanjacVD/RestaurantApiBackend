@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LangRequest;
+use App\Jobs\DeleteTranslations;
 use App\Models\Lang;
 use Illuminate\Http\Request;
 
@@ -15,73 +17,34 @@ class LangController extends Controller
      */
     public function index()
     {
-        $lang = Lang::all();
-        return ;
+        $data = Lang::all(['lang_code', 'lang_name']);
+        return response()->json(['data' => $data], 200);
+    }
+    public function store(LangRequest $request)
+    {
+        $langCode = $request->lang_code;
+        $langName = $request->lang_name;
+        Lang::create([
+            'lang_name' => $langName,
+            'lang_code' => $langCode,
+        ]);
+        return response()->json(['status' => 'created'], 201);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function update(LangRequest $request, $id)
     {
-        //
+        $langName = $request->lang_name;
+        Lang::findOrFail($id)->update([
+            'lang_name' => $langName,
+        ]);
+        return response()->json(['status' => 'updated'], 201);
     }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Lang  $lang
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Lang $lang)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Lang  $lang
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Lang $lang)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Lang  $lang
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Lang $lang)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Lang  $lang
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Lang $lang)
-    {
-        //
+        $lang = Lang::findOrFail($id);
+        $lang->delete();
+        DeleteTranslations::dispatch($lang->lang_code)->onQueue('high');
+        return response()->noContent();
     }
 }
+ //TODO: LANG, on delete, forget translations for every model

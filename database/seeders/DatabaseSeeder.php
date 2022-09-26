@@ -28,12 +28,14 @@ class DatabaseSeeder extends Seeder
         // ]);
 
 
-        // Lang::create([
-        //     'lang' => 'hr',
-        // ]);
-        // Lang::create([
-        //     'lang' => 'en',
-        // ]);
+        Lang::create([
+            'lang_code' => 'hr',
+            'lang_name' => 'hr',
+        ]);
+        Lang::create([
+            'lang_code' => 'en',
+            'lang_name' => 'en',
+        ]);
 
         
         Alergen::factory(5)->create();

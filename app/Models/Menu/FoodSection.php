@@ -15,7 +15,4 @@ class FoodSection extends Model
 
     protected $fillable = ['title', 'order'];
 
-    public function foodCategory(){
-        return $this->hasMany(FoodCategory::class);
-    }
 }
