@@ -47,4 +47,3 @@ class LangController extends Controller
         return response()->noContent();
     }
 }
- //TODO: LANG, on delete, forget translations for every model
