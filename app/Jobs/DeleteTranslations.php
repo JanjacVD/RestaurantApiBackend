@@ -7,6 +7,9 @@ use App\Models\Lang;
 use App\Models\Menu\FoodCategory;
 use App\Models\Menu\FoodItem;
 use App\Models\Menu\FoodSection;
+use App\Models\Messages;
+use App\Models\NavigationTranslations;
+use App\Models\RestaurantInfo;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -27,7 +30,7 @@ class DeleteTranslations implements ShouldQueue
     public function __construct($langCode)
     {
         $this->langCode = $langCode;
-    }   
+    }
 
     /**
      * Execute the job.
@@ -40,19 +43,34 @@ class DeleteTranslations implements ShouldQueue
         $foodCategories = FoodCategory::all();
         $foodSection = FoodSection::all();
         $alergen = Alergen::all();
-        foreach($foodItems as $f){
+        $messages = Messages::all();
+        $info = RestaurantInfo::all();
+        $nav = NavigationTranslations::all();
+        foreach ($foodItems as $f) {
             $f->forgetAllTranslations($this->langCode);
             $f->save();
         }
-        foreach($foodCategories as $f){
+        foreach ($foodCategories as $f) {
             $f->forgetAllTranslations($this->langCode);
             $f->save();
         }
-        foreach($foodSection as $f){
+        foreach ($foodSection as $f) {
             $f->forgetAllTranslations($this->langCode);
             $f->save();
         }
-        foreach($alergen as $f){
+        foreach ($alergen as $f) {
+            $f->forgetAllTranslations($this->langCode);
+            $f->save();
+        }
+        foreach ($messages as $f) {
+            $f->forgetAllTranslations($this->langCode);
+            $f->save();
+        }
+        foreach ($info as $f) {
+            $f->forgetAllTranslations($this->langCode);
+            $f->save();
+        }
+        foreach ($nav as $f) {
             $f->forgetAllTranslations($this->langCode);
             $f->save();
         }
