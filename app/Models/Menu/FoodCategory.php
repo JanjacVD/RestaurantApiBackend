@@ -14,11 +14,13 @@ class FoodCategory extends Model
     public $translatable = ['title'];
 
     protected $fillable = ['title', 'food_section_id', 'order'];
-    
-    public function foodItem(){
+
+    public function foodItem()
+    {
         return $this->hasMany(FoodItem::class);
     }
-    public function foodSection(){
-        return $this->belongsTo(FoodSection::class)->withTrashed();
+    public function foodSection()
+    {
+        return $this->belongsTo(FoodSection::class);
     }
 }

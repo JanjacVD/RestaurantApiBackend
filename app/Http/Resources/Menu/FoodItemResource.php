@@ -16,10 +16,10 @@ class FoodItemResource extends JsonResource
     {
         return [
             'title' => $this->getTranslations('title'),
-            'descritpion' => $this->getTranslations('description'),
-            'price'=>$this->price,
-            'order'=>$this->order,
-            'alergens'=> AlergenResource::collection($this->whenLoaded('alergen'))
+            'description' => $this->getTranslations('description'),
+            'price' => $this->price,
+            'order' => $this->order,
+            'alergens' => AlergenResource::collection($this->whenLoaded('alergen'))
         ];
     }
 }
