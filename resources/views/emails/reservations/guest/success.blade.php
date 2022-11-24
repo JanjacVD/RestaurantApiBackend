@@ -346,15 +346,21 @@ ul.social li{
             	<tr>
             		<td>
             			<div class="text" style="text-align: center;font-size:1.6rem;width:100%">
-            				<h2>Please confirm your reservation</h2>
+            				<h2>Thank you for your reservation</h2>
                             <p>Name: {{$guest->name}}</p>
                             <p>Time: {{$guest->reservation_datetime}}</p>
                             <p>Number of people: {{$guest->numOfPeople}} </p>
                             <p>Phone number: {{$guest->phone}}</p>
             			</div>
+						<div style="width: 100%;text-align:center">
+                            <img
+							style="width: 200px"
+                        src="data:image/png;base64, {{$qr}}"
+                        alt="QR Code"
+                    />
                         </div>
 						<div style="width: 100%;text-align:center">
-                            <p>Click here to confirm your reservation: </p>
+                            <p>If you wish to cancel your reservation, you can do it here: </p>
 							<a style="background: rgb(38, 38, 38);color:#fff;padding:1rem 2rem" href="{{'http://localhost:3000/cancel/'.$guest->uuid}}">Confirm</a>
 						</div>
             		</td>
@@ -390,4 +396,4 @@ ul.social li{
     </div>
   </center>
 </body>
-</html>		
+</html>

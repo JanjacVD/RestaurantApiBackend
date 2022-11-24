@@ -26,6 +26,5 @@ class VerifyEmailController extends Controller
         }
 
         return response()->json(['status' => 'Verified']);
-
     }
 }

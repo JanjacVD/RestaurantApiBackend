@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('navigation_translations', function (Blueprint $table) {
+        Schema::create('disabled_dates', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->json('title');
+            $table->date('date');
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('navigation_translations');
+        Schema::dropIfExists('diabled_dates');
     }
 };

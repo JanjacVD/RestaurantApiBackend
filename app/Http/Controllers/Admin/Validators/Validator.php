@@ -20,8 +20,8 @@ class Validator
 
     public function validateLang($langParams)
     {
-        $lang = Lang::all()->pluck('lang_code');
-        if(!$this->array_equal($lang->toArray(), $langParams)){
+        $lang = ['en', 'hr'];
+        if(!$this->array_equal($lang, $langParams)){
             $this->failed = true;
         }
     }
@@ -31,18 +31,5 @@ class Validator
         if(!$this->array_equal($alergen->toArray(), $alergenParams)){
             $this->failed = true;
         }
-    }
-    public function createTranslations($params)
-    {
-        $lang = Lang::all()->pluck('lang_code');
-        $arr = [];
-        foreach ($lang as $l) {
-            try {
-                $arr[$l] = $params[$l];
-            } catch (Throwable $e) {
-                abort(404, 'Error setting translations');
-            }
-        }
-        return $arr;
     }
 }

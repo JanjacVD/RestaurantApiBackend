@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class BookingPending extends Mailable
+class SendNewReservationToAdmin extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -29,6 +29,6 @@ class BookingPending extends Mailable
      */
     public function build()
     {
-        return $this->from(env('RESERVATION_MAIL'), env('APP_NAME'))->subject('Verify your reservation')->view('emails.reservations.guest.pending');
+        return $this->from(env('MAIL_FROM_ADDRESS'))->subject('Nova rezervacija')->view('emails.reservations.admin.new');
     }
 }

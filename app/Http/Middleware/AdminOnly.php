@@ -16,6 +16,9 @@ class AdminOnly
      */
     public function handle(Request $request, Closure $next)
     {
+        if (!auth()->check()) {
+            return response()->json(['status' => 'Unauthorized'], 403);
+        }
         if (auth()->user()->role === 'Admin') {
             return $next($request);
         } else {

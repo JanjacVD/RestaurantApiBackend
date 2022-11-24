@@ -16,18 +16,16 @@ class BookingSuccess extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    public $guest;
+    public $qr;
+    public function __construct($guest, $qr)
     {
-        //
+        $this->guest = $guest;
+        $this->qr = $qr;
     }
 
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
     public function build()
     {
-        return $this->view('view.name');
+        return $this->from(env('RESERVATION_MAIL'), env('APP_NAME'))->subject('See you soon')->view('emails.reservations.guest.success');
     }
 }

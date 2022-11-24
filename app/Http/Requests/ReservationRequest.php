@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class NavigationRequest extends FormRequest
+class ReservationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +13,7 @@ class NavigationRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,11 @@ class NavigationRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'name' => ['required', 'string'],            
+            'numOfPeople' => ['required', 'integer'],            
+            'email' => ['required','email:rfc,dns'],
+            'reservation_datetime' => ['required', 'date'],
+            'phone' => ['required', 'string']
         ];
     }
 }

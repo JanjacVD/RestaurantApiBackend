@@ -20,13 +20,12 @@ return new class extends Migration
             $table->integer('day_to');
             $table->string('time_from');
             $table->string('time_to');
+            $table->string('bookable_from');
+            $table->string('bookable_to');
             $table->boolean('is_open');
-            $table->json('about_us_title');
-            $table->json('about_us_text');
-            $table->json('icon_translations');
+            $table->boolean('reservations_open');
         });
     }
-
     /**
      * Reverse the migrations.
      *

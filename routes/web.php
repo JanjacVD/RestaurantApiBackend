@@ -1,11 +1,14 @@
 <?php
 
-use App\Events\NewReservationPending;
-use App\Http\Controllers\Admin\LangController;
-use App\Models\Menu\FoodItem;
-use App\Models\Menu\FoodSection;
+use App\Mail\NewReservation;
+use App\Models\Reservation;
+use BaconQrCode\Renderer\ImageRenderer;
+use BaconQrCode\Renderer\Image\ImagickImageBackEnd;
+use BaconQrCode\Renderer\RendererStyle\RendererStyle;
+use BaconQrCode\Writer;
+use App\Models\RestaurantInfo;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
-use Spatie\Translatable\HasTranslations;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,5 +22,16 @@ use Spatie\Translatable\HasTranslations;
 */
 
 Route::get('/', function () {
-    return ['Laravel' => app()->version()];
+    RestaurantInfo::create(
+        [
+            'time_from' => "16:00",
+            'time_to' => '23:00',
+            'bookable_from' => "16:00",
+            'bookable_to' => '20:00',
+            'day_from' => 1,
+            'day_to' => 6,
+            'is_open' => true,
+            'reservations_open' => true
+        ]
+    );
 });

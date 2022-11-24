@@ -18,7 +18,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
             $table->json('title');
-            $table->json('description');
+            $table->json('description')->nullable();
             $table->decimal('price', 4, 2);
             $table->integer('order');
             $table->unsignedBigInteger('food_category_id')->index();

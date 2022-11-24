@@ -38,8 +38,8 @@ class FoodItemController extends Controller
         if ($val->failed) {
             return $this->failedLang();
         }
-        $translationsTitle = $val->createTranslations($request->title);
-        $translationsDesc = $val->createTranslations($request->description);
+        $translationsTitle = $request->title;
+        $translationsDesc = $request->description;
         $alergen = $request->alergen;
         if ($alergen === null) {
             $alergen = [];
@@ -77,8 +77,8 @@ class FoodItemController extends Controller
         if ($val->failed) {
             return $this->failedLang();
         }
-        $translationsTitle = $val->createTranslations($request->title);
-        $translationsDesc = $val->createTranslations($request->description);
+        $translationsTitle = ($request->title);
+        $translationsDesc = ($request->description);
         $alergen = $request->alergen;
         $val->validateAlergen($alergen);
         if ($val->failed) {

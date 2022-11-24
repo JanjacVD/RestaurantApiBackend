@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules;
+use Illuminate\Support\Str;
 
 class RegisteredUserController extends Controller
 {
@@ -23,9 +24,9 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request)
     {
-        if (Gate::denies('create-user')) {
-            abort(403, 'Unauthorized action.');
-        }
+        // if (Gate::denies('create-user')) {
+        //     abort(403, 'Unauthorized action.');
+        // }
 
         $validator = Validator::make($request->only('name', 'email', 'password', 'role', 'password_confirmation'), [
             'name' => ['required', 'string', 'max:255'],
@@ -38,6 +39,7 @@ class RegisteredUserController extends Controller
         }
 
         $user = User::create([
+            'uuid' => Str::uuid(),
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),

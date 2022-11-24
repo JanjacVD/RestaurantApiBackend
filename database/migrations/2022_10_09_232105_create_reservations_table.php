@@ -14,8 +14,15 @@ return new class extends Migration
     public function up()
     {
         Schema::create('reservations', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('uuid')->index();
+            $table->bigIncrements('id');
             $table->timestamps();
+            $table->string('name');
+            $table->integer('numOfPeople');
+            $table->string('phone');
+            $table->dateTime('reservation_datetime');
+            $table->string('email');
+            $table->boolean('confirmed')->default(0);
         });
     }
 

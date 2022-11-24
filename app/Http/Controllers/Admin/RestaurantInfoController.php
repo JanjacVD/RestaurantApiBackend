@@ -24,18 +24,13 @@ class RestaurantInfoController extends Controller
         }
         $val = new Validator();
         $val->validateLang($request->sentLang);
-        $translationsText = $val->createTranslations($request->about_us_text);
-        $translationsTitle = $val->createTranslations($request->about_us_title);
-        $translationsIcon = $val->createTranslations($request->about_us_title);
         RestaurantInfo::create([
             'day_from' => $request->day_from,
             'day_to' => $request->day_to,
             'time_from' => $request->time_from,
             'time_to' => $request->time_to,
             'is_open' => $request->is_open,
-            'about_us_title' => $translationsTitle,
-            'about_us_text' => $translationsText,
-            'icon_translations' => $translationsIcon
+            'reservations_open' => $request->reservations_open
         ]);
         return response()->json(['status' => 'created'], 201);
     }
@@ -54,21 +49,13 @@ class RestaurantInfoController extends Controller
     public function update(RestaurantInfoRequest $request, $id)
     {
         $time = RestaurantInfo::findOrFail($id);
-        $val = new Validator();
-        $val->validateLang($request->sentLang);
-        $translationsText = $val->createTranslations($request->about_us_text);
-        $translationsTitle = $val->createTranslations($request->about_us_title);
-        if ($val->failed) {
-            return $this->failedLang();
-        }
         $time->update([
             'day_from' => $request->day_from,
             'day_to' => $request->day_to,
             'time_from' => $request->time_from,
             'time_to' => $request->time_to,
             'is_open' => $request->is_open,
-            'about_us_title' => $translationsTitle,
-            'about_us_text' => $translationsText
+            'reservations_open' => $request->reservations_open
         ]);
         return response()->json(['status' => 'updated'], 201);
     }

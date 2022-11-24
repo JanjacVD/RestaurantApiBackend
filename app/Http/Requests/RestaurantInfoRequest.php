@@ -24,16 +24,14 @@ class RestaurantInfoRequest extends FormRequest
     public function rules()
     {
         return [
-            'sentLang' => ['required', 'array'],
-            'sentLang*' => ['string'],
             'day_from' => ['required', 'integer'],
             'day_to' => ['required', 'integer'],
             'time_from' => ['required', 'string'],
             'time_to' => ['required', 'string'],
+            'bookable_from' => ['required', 'string'],
+            'bookable_to' => ['required', 'string'],
             'is_open' => ['required', 'boolean'],
-            'about_us_title' => ['required'],
-            'about_us_text' => ['required'],
-            'icon_translations' => ['required'],
+            'reservations_open' => ['required', 'boolean']
         ];
     }
 }

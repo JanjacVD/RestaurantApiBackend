@@ -38,7 +38,7 @@ class FoodCategoryController extends Controller
     {
         $val = new Validator();
         $val->validateLang($request->sentLang);
-        $translations = $val->createTranslations($request->title);
+        $translations = $request->title;
         if ($val->failed) {
             return $this->failedLang();
         }
@@ -82,7 +82,7 @@ class FoodCategoryController extends Controller
         $foodCategory = FoodCategory::findOrFail($id);
         $val = new Validator();
         $val->validateLang($request->sentLang);
-        $translations = $val->createTranslations($request->title);
+        $translations = $request->title;
         if ($val->failed) {
             return $this->failedLang();
         }
