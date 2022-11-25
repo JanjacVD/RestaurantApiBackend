@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ReservationResource;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Str;
 class ReservationController extends Controller
 {
     /**
@@ -15,17 +16,8 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $res = Reservation::where('confirmed', true)->get();
+        return ReservationResource::collection($res);
     }
 
     /**
@@ -36,7 +28,16 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+            Reservation::create([
+                'uuid' => Str::uuid(),
+                'name' => $request->name,
+                'numOfPeople' => $request->numOfPeople,
+                'phone' => $request->phone,
+                'reservation_datetime' => $request->reservation_datetime,
+                'email' => $request->email,
+                'confirmed' => true
+            ]);
+        return response()->json(['status' => 'success'], 201);
     }
 
     /**
@@ -45,9 +46,11 @@ class ReservationController extends Controller
      * @param  \App\Models\Reservation  $reservation
      * @return \Illuminate\Http\Response
      */
-    public function show(Reservation $reservation)
-    {
-        //
+    public function show(Request $request)
+    { 
+        $uuid = $request->uuid;
+        $reservation = Reservation::where('uuid', $uuid)->get();
+        return new ReservationResource($reservation);
     }
 
     /**
@@ -56,22 +59,6 @@ class ReservationController extends Controller
      * @param  \App\Models\Reservation  $reservation
      * @return \Illuminate\Http\Response
      */
-    public function edit(Reservation $reservation)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Reservation  $reservation
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Reservation $reservation)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.
@@ -79,8 +66,10 @@ class ReservationController extends Controller
      * @param  \App\Models\Reservation  $reservation
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Reservation $reservation)
+    public function destroy(Request $request)
     {
-        //
+        $uuid = $request->uuid;
+        Reservation::where('uuid', $uuid)->delete();
+        return response()->noContent();
     }
 }

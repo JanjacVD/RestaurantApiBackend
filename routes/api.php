@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\FoodItemController;
 use App\Http\Controllers\Admin\AlergenController;
 use App\Http\Controllers\Admin\DisabledDatesController;
 use App\Http\Controllers\Admin\FoodSectionController;
+use App\Http\Controllers\Admin\ReservationController;
 use App\Http\Controllers\Guest\PublicController;
 use App\Models\Menu\FoodSection;
 use Illuminate\Http\Request;
@@ -34,8 +35,9 @@ Route::post('reservation-confirm', [PublicController::class, 'reservationConfirm
 Route::delete('reservation-cancel', [PublicController::class, 'reservationCancel']);
 Route::middleware(['throttle:contact'])->post('contact', [PublicController::class, 'contact']);
 //429
-
-// Route::group(['middleware' => ['auth:sanctum', 'mustBeAdmin']], function () {
+//TODO:: SCHEDULED COMMAND THAT DELETES OLD RESERVATIONS OLD PENDINGS
+//TODO: Routes for storing and deleting users
+Route::group(['middleware' => ['auth:sanctum', 'mustBeAdmin']], function () {
     //Section for admin
     Route::get('section', [FoodSectionController::class, 'index']);
     Route::get('section-trashed', [FoodSectionController::class, 'getTrashed']);
@@ -72,12 +74,16 @@ Route::middleware(['throttle:contact'])->post('contact', [PublicController::clas
     Route::put('alergen-update/{categoryId}', [AlergenController::class, 'update']);
     Route::delete('alergen-delete/{categoryId}', [AlergenController::class, 'destroy']);
     Route::delete('alergen-destroy/{categoryId}', [AlergenController::class, 'forceDestroy']);
-    //
+    //Settings for admin
     Route::get('disabled-date', [DisabledDatesController::class, 'index']);
     Route::get('disabled-date/{dateId}', [DisabledDatesController::class, 'show']);
     Route::post('disabled-date', [DisabledDatesController::class, 'store']);
     Route::delete('disabled-date/{dateId}', [DisabledDatesController::class, 'destroy']);
-    
-// });
-
+});
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::get('reservations/{reservationUuid}', [ReservationController::class, 'show']);
+    Route::get('reservations', [ReservationController::class, 'index']);
+    Route::post('reservations', [ReservationController::class, 'store']);
+    Route::delete('reservations/{reservationUuid}', [ReservationController::class, 'destroy']);
+});
 require __DIR__ . '/auth.php';
